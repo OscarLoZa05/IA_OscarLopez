@@ -10,7 +10,10 @@ public class Enemy : MonoBehaviour
     {
         Patrolling,
         Chasing,
-        Searhing
+        Searhing,
+        Attacking,
+        Waiting,
+
     }
 
     //Cosas Patrullar
@@ -18,15 +21,22 @@ public class Enemy : MonoBehaviour
     Transform _player;
     Vector3 _playerLastPositionKnown;
     [SerializeField] private Transform[] _patrolPoints;
+    public int indexPatrolling = 0;
 
     //Cosas de Detección
     [SerializeField] private float _detectionRange = 7;
     [SerializeField] private float _detectionAngle = 90;
 
     //Cosas de Busqueda
-    private float _searchTimer;
+    public float _searchTimer;
     [SerializeField] private float _searchWaitTimer = 15;
     [SerializeField] private float _searchRadius = 10;
+
+    //Cosas Ataque
+
+    //Cosas Esperar
+    [SerializeField] public float _waitTimer;
+    [SerializeField] private float _waitingWaitTimer = 5;
 
 
 
@@ -39,7 +49,9 @@ public class Enemy : MonoBehaviour
     void Start()
     {
         currentState = EnemyState.Patrolling;
-        SetRandomPatrolPoint();
+        indexPatrolling = 0;
+        PatrolPoint();
+        //SetRandomPatrolPoint();
     }
 
     void Update()
@@ -55,6 +67,12 @@ public class Enemy : MonoBehaviour
             case EnemyState.Searhing:
                 Search();
             break;
+            case EnemyState.Attacking:
+                Attack();
+            break;
+            case EnemyState.Waiting:
+                Wait();
+            break;
             default:
                 Patrol();
             break;
@@ -69,7 +87,7 @@ public class Enemy : MonoBehaviour
         }
         if(_enemyAgent.remainingDistance < 0.5f)
         {
-            SetRandomPatrolPoint();
+            currentState = EnemyState.Waiting;
         }
 
     }
@@ -110,6 +128,40 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    void Attack()
+    {
+        Debug.Log("Has sido atacado");
+    }
+
+    void Wait()
+    {
+        if(!OnRange())
+        {
+            _waitTimer += Time.deltaTime;
+
+            if(_waitTimer >= _waitingWaitTimer)
+            {
+                indexPatrolling ++;
+                if(indexPatrolling >= _patrolPoints.Length)
+                {
+                    indexPatrolling = 0;
+                }
+                currentState = EnemyState.Patrolling;
+                PatrolPoint();
+            }
+        }   
+    }
+
+    void PatrolPoint()
+    {
+        _waitTimer = 0;
+        if(indexPatrolling < _patrolPoints.Length)
+        {
+            _enemyAgent.SetDestination(_patrolPoints[indexPatrolling].position);
+        }
+        
+    }
+
     bool RandomSearchPoint(Vector3 center, float radius, out Vector3 point)
     {
         Vector3 randomPoint = center + Random.insideUnitSphere * radius;
@@ -125,11 +177,10 @@ public class Enemy : MonoBehaviour
         return false;
     }
 
-    void SetRandomPatrolPoint()
+    /*void SetRandomPatrolPoint()
     {
         _enemyAgent.SetDestination(_patrolPoints[Random.Range(0, _patrolPoints.Length)].position);
-    }
-
+    }*/
 
     bool OnRange()
     {
@@ -167,7 +218,7 @@ public class Enemy : MonoBehaviour
             if(hit.collider.CompareTag("Player"))
             {
                 _playerLastPositionKnown = _player.position;
-                
+
                 return true;
             }
             else
