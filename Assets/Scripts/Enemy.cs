@@ -4,8 +4,8 @@ using UnityEngine.AI;
 public class Enemy : MonoBehaviour
 {
     private NavMeshAgent _enemyAgent;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     
+
     public enum EnemyState
     {
         Patrolling,
@@ -146,6 +146,11 @@ public class Enemy : MonoBehaviour
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
         float distanceToPlayer = Vector3.Distance(transform.position, _player.position);
 
+        if(_player.position == _playerLastPositionKnown)
+        {
+            return true;
+        }
+
         if(distanceToPlayer > _detectionAngle)
         {
             return false;
@@ -154,6 +159,21 @@ public class Enemy : MonoBehaviour
         if(angleToPlayer > _detectionAngle * 0.5f)
         {
             return false; 
+        }
+
+        RaycastHit hit;
+        if(Physics.Raycast(transform.position, directionToPlayer, out hit, distanceToPlayer))
+        {
+            if(hit.collider.CompareTag("Player"))
+            {
+                _playerLastPositionKnown = _player.position;
+                
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         return true;
