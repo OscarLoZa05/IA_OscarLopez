@@ -10792,7 +10792,7 @@ Transform:
   m_GameObject: {fileID: 675428907}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.7651806, y: 15.190355, z: -32.903027}
+  m_LocalPosition: {x: -1.4, y: 1.5, z: -6.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12999,7 +12999,7 @@ GameObject:
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 419385456094870383, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -13027,6 +13027,8 @@ MonoBehaviour:
   _searchTimer: 0
   _searchWaitTimer: 15
   _searchRadius: 10
+  _attackWaitTimer: 5
+  _attackTimer: 0
   _waitTimer: 0
   _waitingWaitTimer: 5
 --- !u!195 &834211332
@@ -13634,8 +13636,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.2432501, y: -0.7191711, z: 0.30397788, w: 0.57551706}
-  m_LocalPosition: {x: 7.87, y: 19.08, z: 18.49}
+  m_LocalRotation: {x: 0.40442663, y: -0.57990354, z: 0.40424246, w: 0.5802922}
+  m_LocalPosition: {x: 16.112806, y: 47.08397, z: -4.7268586}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

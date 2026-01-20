@@ -32,7 +32,9 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float _searchWaitTimer = 15;
     [SerializeField] private float _searchRadius = 10;
 
-    //Cosas Ataque
+    //Cosas de atacar
+    public float _attackWaitTimer = 5;
+    public float _attackTimer = 0;
 
     //Cosas Esperar
     [SerializeField] public float _waitTimer;
@@ -97,10 +99,20 @@ public class Enemy : MonoBehaviour
         {
             currentState = EnemyState.Searhing;
         }
-        _enemyAgent.SetDestination(_player.position);
+        if(OnRange())
+        {
+            _enemyAgent.SetDestination(_player.position);
 
-        _playerLastPositionKnown = _player.position;
+            _playerLastPositionKnown = _player.position;
+
+            if(_enemyAgent.remainingDistance < 1f)
+            {
+                //_attackTimer = 0;
+                currentState = EnemyState.Attacking;
+            }
+        }        
     }
+    
     void Search()
     {
         if(OnRange())
@@ -124,17 +136,38 @@ public class Enemy : MonoBehaviour
         else
         {
             currentState = EnemyState.Patrolling;
+            PatrolPoint();
             _searchTimer = 0;
         }
     }
 
     void Attack()
     {
-        Debug.Log("Has sido atacado");
+        if(OnRange() && Vector3.Distance(transform.position, _player.position) < 1.5f)
+        {
+            _attackTimer += Time.deltaTime;
+            
+            if(_attackTimer > _attackWaitTimer)
+            {
+                Debug.Log("Atacado");
+                _attackTimer = 0;
+                currentState = EnemyState.Chasing;
+            }
+        }
+        if(!OnRange())
+        {
+            _attackTimer = 0;
+            currentState = EnemyState.Searhing;
+        }
     }
+    
 
     void Wait()
     {
+        if(OnRange())
+        {
+            currentState = EnemyState.Chasing;
+        }
         if(!OnRange())
         {
             _waitTimer += Time.deltaTime;
@@ -197,12 +230,12 @@ public class Enemy : MonoBehaviour
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
         float distanceToPlayer = Vector3.Distance(transform.position, _player.position);
 
-        if(_player.position == _playerLastPositionKnown)
+        /*if(_player.position == _playerLastPositionKnown)
         {
             return true;
-        }
+        }*/
 
-        if(distanceToPlayer > _detectionAngle)
+        if(distanceToPlayer > _detectionRange)
         {
             return false;
         }
